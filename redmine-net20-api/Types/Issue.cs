@@ -299,7 +299,7 @@ namespace Redmine.Net.Api.Types
 
                     case RedmineKeys.PRIVATE_NOTES: PrivateNotes = reader.ReadElementContentAsBoolean(); break;
 
-                    case RedmineKeys.IS_PRIVATE: IsPrivate = reader.ReadContentAsBoolean(); break;
+                    case RedmineKeys.IS_PRIVATE: IsPrivate = reader.ReadElementContentAsBoolean(); break;
 
                     case RedmineKeys.SUBJECT: Subject = reader.ReadElementContentAsString(); break;
 
