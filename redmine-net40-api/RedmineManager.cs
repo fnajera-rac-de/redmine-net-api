@@ -571,9 +571,9 @@ namespace Redmine.Net.Api
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         /// <code></code>
-        protected WebClient CreateWebClient(NameValueCollection parameters)
+        protected virtual WebClient CreateWebClient(NameValueCollection parameters)
         {
-            var webClient = new RedmineWebClient();
+            var webClient = CreateNewWebClient();
 
             webClient.Headers.Add(HttpRequestHeader.ContentType, mimeFormat == MimeFormat.json ? "application/json" : "application/xml");
             webClient.Encoding = Encoding.UTF8;
@@ -605,9 +605,9 @@ namespace Redmine.Net.Api
         /// <param name="parameters">The parameters.</param>
         /// <returns></returns>
         /// <code></code>
-        protected WebClient CreateUploadWebClient(NameValueCollection parameters = null)
+        protected virtual WebClient CreateUploadWebClient(NameValueCollection parameters = null)
         {
-            var webClient = new RedmineWebClient();
+            var webClient = CreateNewWebClient();
 
             if (parameters != null) webClient.QueryString = parameters;
 
@@ -627,6 +627,16 @@ namespace Redmine.Net.Api
             webClient.Headers.Add(HttpRequestHeader.Authorization, basicAuthorization);
 
             return webClient;
+        }
+
+        /// <summary>
+        /// Creates a new instance of a WebClient suitable for Redmine operations.
+        /// The default implementation returns a new instance of RedmineWebClient.
+        /// </summary>
+        /// <returns>A new instance of a WebClient suitable for Redmine operations.</returns>
+        protected virtual WebClient CreateNewWebClient()
+        {
+            return new RedmineWebClient();
         }
 
         /// <summary>
