@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum., Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,31 +14,105 @@
    limitations under the License.
 */
 
-
 using System;
 using System.Net;
 
 namespace Redmine.Net.Api
 {
     /// <summary>
-    /// 
     /// </summary>
-    public class RedmineWebClient :WebClient
+    /// <seealso cref="System.Net.WebClient" />
+    public class RedmineWebClient : WebClient
     {
-        private readonly CookieContainer container = new CookieContainer();
+        private const string UA = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0";
 
+        /// <summary>
+        ///     Gets or sets a value indicating whether [use proxy].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [use proxy]; otherwise, <c>false</c>.
+        /// </value>
+        public bool UseProxy { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [use cookies].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [use cookies]; otherwise, <c>false</c>.
+        /// </value>
+        public bool UseCookies { get; set; }
+
+        /// <summary>
+        ///     in miliseconds
+        /// </summary>
+        /// <value>
+        ///     The timeout.
+        /// </value>
+        public TimeSpan? Timeout { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the cookie container.
+        /// </summary>
+        /// <value>
+        ///     The cookie container.
+        /// </value>
+        public CookieContainer CookieContainer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [pre authenticate].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [pre authenticate]; otherwise, <c>false</c>.
+        /// </value>
+        public bool PreAuthenticate { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [keep alive].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [keep alive]; otherwise, <c>false</c>.
+        /// </value>
+        public bool KeepAlive { get; set; }
+
+        /// <summary>
+        ///     Returns a <see cref="T:System.Net.WebRequest" /> object for the specified resource.
+        /// </summary>
+        /// <param name="address">A <see cref="T:System.Uri" /> that identifies the resource to request.</param>
+        /// <returns>
+        ///     A new <see cref="T:System.Net.WebRequest" /> object for the specified resource.
+        /// </returns>
         protected override WebRequest GetWebRequest(Uri address)
         {
-            Headers.Add(HttpRequestHeader.Cookie, "redmineCookie");
-
             var wr = base.GetWebRequest(address);
             var httpWebRequest = wr as HttpWebRequest;
 
             if (httpWebRequest != null)
             {
-                httpWebRequest.CookieContainer = container;
+                if (UseCookies)
+                {
+                    httpWebRequest.Headers.Add(HttpRequestHeader.Cookie, "redmineCookie");
+                    httpWebRequest.CookieContainer = CookieContainer;
+                }
+                httpWebRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate |
+                                                        DecompressionMethods.None;
+                httpWebRequest.PreAuthenticate = PreAuthenticate;
+                httpWebRequest.KeepAlive = KeepAlive;
+                httpWebRequest.UseDefaultCredentials = UseDefaultCredentials;
+                httpWebRequest.Credentials = Credentials;
+                httpWebRequest.UserAgent = UA;
+                httpWebRequest.CachePolicy = CachePolicy;
 
-                httpWebRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                if (UseProxy)
+                {
+                    if (Proxy != null)
+                    {
+                        Proxy.Credentials = Credentials;
+                    }
+                    httpWebRequest.Proxy = Proxy;
+                }
+
+                if (Timeout != null)
+                    httpWebRequest.Timeout = Timeout.Value.Milliseconds;
 
                 return httpWebRequest;
             }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -21,14 +21,38 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\redmine-net40-api.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\redmine-net40-api.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugXML|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugXML\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugJSON|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugJSON\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,11 +65,69 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\redmine-net20-api\Extensions\XmlWriterExtensions.cs">
+      <Link>Extensions\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Internals\UrlHelper.cs">
+      <Link>Internals\UrlHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Internals\DataHelper.cs">
+      <Link>Internals\DataHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Extensions\NameValueCollectionExtensions.cs">
+      <Link>Extensions\NameValueCollectionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\HttpVerbs.cs">
+      <Link>HttpVerbs.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Internals\HashCodeExtensions.cs">
+      <Link>Extensions\HashCodeExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Internals\WebApiHelper.cs">
+      <Link>Internals\WebApiHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\ColorConsoleLogger.cs">
+      <Link>Logging\ColorConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\ConsoleLogger.cs">
+      <Link>Logging\ConsoleLogger.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\ILogger.cs">
+      <Link>Logging\ILogger.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\LogEntry.cs">
+      <Link>Logging\LogEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\Logger.cs">
+      <Link>Logging\Logger.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\LoggerExtensions.cs">
+      <Link>Logging\LoggerExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\LoggingEventType.cs">
+      <Link>Logging\LoggingEventType.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\RedmineConsoleTraceListener.cs">
+      <Link>Logging\RedmineConsoleTraceListener.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Logging\TraceLogger.cs">
+      <Link>Logging\TraceLogger.cs</Link>
+    </Compile>
     <Compile Include="..\redmine-net20-api\RedmineKeys.cs">
       <Link>RedmineKeys.cs</Link>
     </Compile>
+    <Compile Include="..\redmine-net20-api\RedmineManager.cs">
+      <Link>RedmineManager.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\RedmineWebClient.cs">
+      <Link>RedmineWebClient.cs</Link>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="..\redmine-net20-api\Types\Attachment.cs">
       <Link>Types\Attachment.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Types\Attachments.cs">
+      <Link>Types\Attachments.cs</Link>
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\ChangeSet.cs">
       <Link>Types\ChangeSet.cs</Link>
@@ -79,6 +161,12 @@
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\IdentifiableName.cs">
       <Link>Types\IdentifiableName.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Types\IRedmineManager.cs">
+      <Link>Types\IRedmineManager.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Types\IRedmineWebClient.cs">
+      <Link>Types\IRedmineWebClient.cs</Link>
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\Issue.cs">
       <Link>Types\Issue.cs</Link>
@@ -115,6 +203,9 @@
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\News.cs">
       <Link>Types\News.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Types\PaginatedObjects.cs">
+      <Link>Types\PaginatedObjects.cs</Link>
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\Permission.cs">
       <Link>Types\Permission.cs</Link>
@@ -176,8 +267,10 @@
     <Compile Include="..\redmine-net20-api\Types\WikiPage.cs">
       <Link>Types\WikiPage.cs</Link>
     </Compile>
-    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\XmlReaderExtensions.cs" />
     <Compile Include="JSonConverters\AttachmentConverter.cs" />
+    <Compile Include="JSonConverters\AttachmentsConverter.cs" />
     <Compile Include="JSonConverters\ChangeSetConverter.cs" />
     <Compile Include="JSonConverters\CustomFieldConverter.cs" />
     <Compile Include="JSonConverters\CustomFieldPossibleValueConverter.cs" />
@@ -216,15 +309,42 @@
     <Compile Include="JSonConverters\VersionConverter.cs" />
     <Compile Include="JSonConverters\WatcherConverter.cs" />
     <Compile Include="JSonConverters\WikiPageConverter.cs" />
-    <Compile Include="JsonExtensions.cs" />
+    <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="MimeFormat.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RedmineException.cs" />
-    <Compile Include="RedmineManager.cs" />
-    <Compile Include="RedmineSerialization.cs" />
-    <Compile Include="RedmineSerializationJSON.cs" />
-    <Compile Include="RedmineWebClient.cs">
-      <SubType>Component</SubType>
+    <Compile Include="Async\RedmineManagerAsync.cs" />
+    <Compile Include="Internals\RedmineSerializerJson.cs" />
+    <Compile Include="Internals\RedmineSerializer.cs" />
+    <Compile Include="..\redmine-net20-api\Types\IValue.cs">
+      <Link>Types\IValue.cs</Link>
+    </Compile>
+    <Compile Include="Extensions\WebExtensions.cs" />
+    <Compile Include="..\redmine-net20-api\Exceptions\NotFoundException.cs">
+      <Link>Exceptions\NotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\RedmineException.cs">
+      <Link>Exceptions\RedmineException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\RedmineTimeoutException.cs">
+      <Link>Exceptions\RedmineTimeoutException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\NameResolutionFailureException.cs">
+      <Link>Exceptions\NameResolutionFailureException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\InternalServerErrorException.cs">
+      <Link>Exceptions\InternalServerErrorException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\UnauthorizedException.cs">
+      <Link>Exceptions\UnauthorizedException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\ForbiddenException.cs">
+      <Link>Exceptions\ForbiddenException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\ConflictException.cs">
+      <Link>Exceptions\ConflictException.cs</Link>
+    </Compile>
+    <Compile Include="..\redmine-net20-api\Exceptions\NotAcceptableException.cs">
+      <Link>Exceptions\NotAcceptableException.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup />

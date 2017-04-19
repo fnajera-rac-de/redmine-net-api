@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -28,7 +30,7 @@ namespace Redmine.Net.Api.Types
     public class Project : IdentifiableName, IEquatable<Project>
     {
         /// <summary>
-        /// Gets or sets the identifier.
+        /// Gets or sets the identifier (Required).
         /// </summary>
         /// <value>The identifier.</value>
         [XmlElement(RedmineKeys.IDENTIFIER)]
@@ -69,6 +71,12 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.UPDATED_ON, IsNullable = true)]
         public DateTime? UpdatedOn { get; set; }
 
+        /// <summary>
+        /// Gets or sets the status.
+        /// </summary>
+        /// <value>
+        /// The status.
+        /// </value>
         [XmlElement(RedmineKeys.STATUS)]
         public ProjectStatus Status { get; set; }
 
@@ -82,6 +90,12 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.IS_PUBLIC)]
         public bool IsPublic { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [inherit members].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [inherit members]; otherwise, <c>false</c>.
+        /// </value>
         [XmlElement(RedmineKeys.INHERIT_MEMBERS)]
         public bool InheritMembers { get; set; }
 
@@ -95,10 +109,22 @@ namespace Redmine.Net.Api.Types
         [XmlArrayItem(RedmineKeys.TRACKER)]
         public IList<ProjectTracker> Trackers { get; set; }
 
+        /// <summary>
+        /// Gets or sets the custom fields.
+        /// </summary>
+        /// <value>
+        /// The custom fields.
+        /// </value>
         [XmlArray(RedmineKeys.CUSTOM_FIELDS)]
         [XmlArrayItem(RedmineKeys.CUSTOM_FIELD)]
         public IList<IssueCustomField> CustomFields { get; set; }
 
+        /// <summary>
+        /// Gets or sets the issue categories.
+        /// </summary>
+        /// <value>
+        /// The issue categories.
+        /// </value>
         [XmlArray(RedmineKeys.ISSUE_CATEGORIES)]
         [XmlArrayItem(RedmineKeys.ISSUE_CATEGORY)]
         public IList<ProjectIssueCategory> IssueCategories { get; set; }
@@ -106,6 +132,9 @@ namespace Redmine.Net.Api.Types
         /// <summary>
         /// since 2.6.0
         /// </summary>
+        /// <value>
+        /// The enabled modules.
+        /// </value>
         [XmlArray(RedmineKeys.ENABLED_MODULES)]
         [XmlArrayItem(RedmineKeys.ENABLED_MODULE)]
         public IList<ProjectEnabledModule> EnabledModules { get; set; }
@@ -162,47 +191,88 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="writer"></param>
         public override void WriteXml(XmlWriter writer)
         {
             writer.WriteElementString(RedmineKeys.NAME, Name);
             writer.WriteElementString(RedmineKeys.IDENTIFIER, Identifier);
             writer.WriteElementString(RedmineKeys.DESCRIPTION, Description);
-            writer.WriteElementString(RedmineKeys.INHERIT_MEMBERS, InheritMembers.ToString());
-            writer.WriteElementString(RedmineKeys.IS_PUBLIC, IsPublic.ToString());
+            writer.WriteElementString(RedmineKeys.INHERIT_MEMBERS, InheritMembers.ToString().ToLowerInvariant());
+            writer.WriteElementString(RedmineKeys.IS_PUBLIC, IsPublic.ToString().ToLowerInvariant());
             writer.WriteIdOrEmpty(Parent, RedmineKeys.PARENT_ID);
             writer.WriteElementString(RedmineKeys.HOMEPAGE, HomePage);
 
-            if (Trackers != null)
-            {
-                foreach (var item in Trackers)
-                {
-                    writer.WriteElementString(RedmineKeys.TRACKER_IDS, item.Id.ToString());
-                }
-            }
-
-            if (EnabledModules != null)
-            {
-                foreach (var item in EnabledModules)
-                {
-                    writer.WriteElementString(RedmineKeys.ENABLED_MODULE_NAMES, item.Name);
-                }
-            }
+            writer.WriteListElements(Trackers as List<IValue>, RedmineKeys.TRACKER_IDS);
+            writer.WriteListElements(EnabledModules as List<IValue>, RedmineKeys.ENABLED_MODULE_NAMES);
 
             if (Id == 0) return;
 
             writer.WriteArray(CustomFields, RedmineKeys.CUSTOM_FIELDS);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Project other)
         {
             if (other == null) return false;
-            return (Identifier == other.Identifier);
+            return (
+                Id == other.Id
+                && Identifier.Equals(other.Identifier)
+                && Description.Equals(other.Description)
+                && (Parent != null ? Parent.Equals(other.Parent) : other.Parent == null)
+				&& (HomePage != null ? HomePage.Equals(other.HomePage) : other.HomePage == null)
+                && CreatedOn == other.CreatedOn
+                && UpdatedOn == other.UpdatedOn
+                && Status == other.Status
+                && IsPublic == other.IsPublic
+                && InheritMembers == other.InheritMembers
+                && (Trackers != null ? Trackers.Equals<ProjectTracker>(other.Trackers) : other.Trackers == null)
+                && (CustomFields != null ? CustomFields.Equals<IssueCustomField>(other.CustomFields) : other.CustomFields == null)
+                && (IssueCategories != null ? IssueCategories.Equals<ProjectIssueCategory>(other.IssueCategories) : other.IssueCategories == null)
+                && (EnabledModules != null ? EnabledModules.Equals<ProjectEnabledModule>(other.EnabledModules) : other.EnabledModules == null)
+            );
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
-            var hashCode = !string.IsNullOrEmpty(Identifier) ? Identifier.GetHashCode() : 0;
-            return hashCode;
+	        unchecked
+	        {
+		        var hashCode = base.GetHashCode();
+		        hashCode = HashCodeHelper.GetHashCode(Identifier, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(Description, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(Parent, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(HomePage, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(CreatedOn, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(UpdatedOn, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(Status, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(IsPublic, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(InheritMembers, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(Trackers, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(CustomFields, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(IssueCategories, hashCode);
+		        hashCode = HashCodeHelper.GetHashCode(EnabledModules, hashCode);
+
+		        return hashCode;
+	        }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[Project: {13}, Identifier={0}, Description={1}, Parent={2}, HomePage={3}, CreatedOn={4}, UpdatedOn={5}, Status={6}, IsPublic={7}, InheritMembers={8}, Trackers={9}, CustomFields={10}, IssueCategories={11}, EnabledModules={12}]",
+                Identifier, Description, Parent, HomePage, CreatedOn, UpdatedOn, Status, IsPublic, InheritMembers, Trackers, CustomFields, IssueCategories, EnabledModules, base.ToString());
         }
     }
 }

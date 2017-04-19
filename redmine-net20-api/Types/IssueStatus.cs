@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -42,6 +43,10 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.IS_CLOSED)]
         public bool IsClosed { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
             reader.Read();
@@ -68,27 +73,47 @@ namespace Redmine.Net.Api.Types
             }
         }
 
-        public override void WriteXml(XmlWriter writer){}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
+        public override void WriteXml(XmlWriter writer) { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(IssueStatus other)
         {
             if (other == null) return false;
             return (Id == other.Id && Name == other.Name && IsClosed == other.IsClosed && IsDefault == other.IsDefault);
         }
 
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            unchecked
+            {
+                var hashCode = 13;
+                hashCode = HashCodeHelper.GetHashCode(Id, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(IsClosed, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(IsDefault, hashCode);
+                return hashCode;
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0}, {1}, {2}, {3}", Id, Name, IsDefault, IsClosed);
+            return string.Format("[IssueStatus: {2}, IsDefault={0}, IsClosed={1}]", IsDefault, IsClosed, base.ToString());
         }
     }
 }

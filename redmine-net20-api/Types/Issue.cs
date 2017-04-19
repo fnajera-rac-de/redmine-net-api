@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu, Dorin Huzum.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -109,6 +110,12 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.DONE_RATIO, IsNullable = true)]
         public float? DoneRatio { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [private notes].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [private notes]; otherwise, <c>false</c>.
+        /// </value>
         [XmlElement(RedmineKeys.PRIVATE_NOTES)]
         public bool PrivateNotes { get; set; }
 
@@ -196,6 +203,7 @@ namespace Redmine.Net.Api.Types
         /// </value>
         [XmlElement(RedmineKeys.IS_PRIVATE)]
         public bool IsPrivate { get; set; }
+
         /// <summary>
         /// Gets or sets the journals.
         /// </summary>
@@ -257,12 +265,26 @@ namespace Redmine.Net.Api.Types
         [XmlArrayItem(RedmineKeys.UPLOAD)]
         public IList<Upload> Uploads { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [XmlArray(RedmineKeys.WATCHERS)]
         [XmlArrayItem(RedmineKeys.WATCHER)]
         public IList<Watcher> Watchers { get; set; }
 
-        public XmlSchema GetSchema() { return null; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadXml(XmlReader reader)
         {
             reader.Read();
@@ -277,83 +299,150 @@ namespace Redmine.Net.Api.Types
 
                 switch (reader.Name)
                 {
-                    case RedmineKeys.ID: Id = reader.ReadElementContentAsInt(); break;
+                    case RedmineKeys.ID:
+                        Id = reader.ReadElementContentAsInt();
+                        break;
 
-                    case RedmineKeys.PROJECT: Project = new IdentifiableName(reader); break;
+                    case RedmineKeys.PROJECT:
+                        Project = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.TRACKER: Tracker = new IdentifiableName(reader); break;
+                    case RedmineKeys.TRACKER:
+                        Tracker = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.STATUS: Status = new IdentifiableName(reader); break;
+                    case RedmineKeys.STATUS:
+                        Status = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.PRIORITY: Priority = new IdentifiableName(reader); break;
+                    case RedmineKeys.PRIORITY:
+                        Priority = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.AUTHOR: Author = new IdentifiableName(reader); break;
+                    case RedmineKeys.AUTHOR:
+                        Author = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.ASSIGNED_TO: AssignedTo = new IdentifiableName(reader); break;
+                    case RedmineKeys.ASSIGNED_TO:
+                        AssignedTo = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.CATEGORY: Category = new IdentifiableName(reader); break;
+                    case RedmineKeys.CATEGORY:
+                        Category = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.PARENT: ParentIssue = new IdentifiableName(reader); break;
+                    case RedmineKeys.PARENT:
+                        ParentIssue = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.FIXED_VERSION: FixedVersion = new IdentifiableName(reader); break;
+                    case RedmineKeys.FIXED_VERSION:
+                        FixedVersion = new IdentifiableName(reader);
+                        break;
 
-                    case RedmineKeys.PRIVATE_NOTES: PrivateNotes = reader.ReadElementContentAsBoolean(); break;
+                    case RedmineKeys.PRIVATE_NOTES:
+                        PrivateNotes = reader.ReadElementContentAsBoolean();
+                        break;
 
-                    case RedmineKeys.IS_PRIVATE: IsPrivate = reader.ReadElementContentAsBoolean(); break;
+                    case RedmineKeys.IS_PRIVATE:
+                        IsPrivate = reader.ReadElementContentAsBoolean();
+                        break;
 
-                    case RedmineKeys.SUBJECT: Subject = reader.ReadElementContentAsString(); break;
+                    case RedmineKeys.SUBJECT:
+                        Subject = reader.ReadElementContentAsString();
+                        break;
 
-                    case RedmineKeys.NOTES: Notes = reader.ReadElementContentAsString(); break;
+                    case RedmineKeys.NOTES:
+                        Notes = reader.ReadElementContentAsString();
+                        break;
 
-                    case RedmineKeys.DESCRIPTION: Description = reader.ReadElementContentAsString(); break;
+                    case RedmineKeys.DESCRIPTION:
+                        Description = reader.ReadElementContentAsString();
+                        break;
 
-                    case RedmineKeys.START_DATE: StartDate = reader.ReadElementContentAsNullableDateTime(); break;
+                    case RedmineKeys.START_DATE:
+                        StartDate = reader.ReadElementContentAsNullableDateTime();
+                        break;
 
-                    case RedmineKeys.DUE_DATE: DueDate = reader.ReadElementContentAsNullableDateTime(); break;
+                    case RedmineKeys.DUE_DATE:
+                        DueDate = reader.ReadElementContentAsNullableDateTime();
+                        break;
 
-                    case RedmineKeys.DONE_RATIO: DoneRatio = reader.ReadElementContentAsNullableFloat(); break;
+                    case RedmineKeys.DONE_RATIO:
+                        DoneRatio = reader.ReadElementContentAsNullableFloat();
+                        break;
 
-                    case RedmineKeys.ESTIMATED_HOURS: EstimatedHours = reader.ReadElementContentAsNullableFloat(); break;
+                    case RedmineKeys.ESTIMATED_HOURS:
+                        EstimatedHours = reader.ReadElementContentAsNullableFloat();
+                        break;
 
-                    case RedmineKeys.SPENT_HOURS: SpentHours = reader.ReadElementContentAsNullableFloat(); break;
+                    case RedmineKeys.SPENT_HOURS:
+                        SpentHours = reader.ReadElementContentAsNullableFloat();
+                        break;
 
-                    case RedmineKeys.CREATED_ON: CreatedOn = reader.ReadElementContentAsNullableDateTime(); break;
+                    case RedmineKeys.CREATED_ON:
+                        CreatedOn = reader.ReadElementContentAsNullableDateTime();
+                        break;
 
-                    case RedmineKeys.UPDATED_ON: UpdatedOn = reader.ReadElementContentAsNullableDateTime(); break;
+                    case RedmineKeys.UPDATED_ON:
+                        UpdatedOn = reader.ReadElementContentAsNullableDateTime();
+                        break;
 
-                    case RedmineKeys.CLOSED_ON: ClosedOn = reader.ReadElementContentAsNullableDateTime(); break;
+                    case RedmineKeys.CLOSED_ON:
+                        ClosedOn = reader.ReadElementContentAsNullableDateTime();
+                        break;
 
-                    case RedmineKeys.CUSTOM_FIELDS: CustomFields = reader.ReadElementContentAsCollection<IssueCustomField>(); break;
+                    case RedmineKeys.CUSTOM_FIELDS:
+                        CustomFields = reader.ReadElementContentAsCollection<IssueCustomField>();
+                        break;
 
-                    case RedmineKeys.ATTACHMENTS: Attachments = reader.ReadElementContentAsCollection<Attachment>(); break;
+                    case RedmineKeys.ATTACHMENTS:
+                        Attachments = reader.ReadElementContentAsCollection<Attachment>();
+                        break;
 
-                    case RedmineKeys.RELATIONS: Relations = reader.ReadElementContentAsCollection<IssueRelation>(); break;
+                    case RedmineKeys.RELATIONS:
+                        Relations = reader.ReadElementContentAsCollection<IssueRelation>();
+                        break;
 
-                    case RedmineKeys.JOURNALS: Journals = reader.ReadElementContentAsCollection<Journal>(); break;
+                    case RedmineKeys.JOURNALS:
+                        Journals = reader.ReadElementContentAsCollection<Journal>();
+                        break;
 
-                    case RedmineKeys.CHANGESETS: Changesets = reader.ReadElementContentAsCollection<ChangeSet>(); break;
+                    case RedmineKeys.CHANGESETS:
+                        Changesets = reader.ReadElementContentAsCollection<ChangeSet>();
+                        break;
 
-                    case RedmineKeys.CHILDREN: Children = reader.ReadElementContentAsCollection<IssueChild>(); break;
+                    case RedmineKeys.CHILDREN:
+                        Children = reader.ReadElementContentAsCollection<IssueChild>();
+                        break;
 
-                    case RedmineKeys.WATCHERS: Watchers = reader.ReadElementContentAsCollection<Watcher>(); break;
+                    case RedmineKeys.WATCHERS:
+                        Watchers = reader.ReadElementContentAsCollection<Watcher>();
+                        break;
 
-                    default: reader.Read(); break;
+                    default:
+                        reader.Read();
+                        break;
                 }
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteElementString(RedmineKeys.SUBJECT, Subject);
             writer.WriteElementString(RedmineKeys.NOTES, Notes);
+
             if (Id != 0)
             {
-                writer.WriteElementString(RedmineKeys.PRIVATE_NOTES, PrivateNotes.ToString());
+                writer.WriteElementString(RedmineKeys.PRIVATE_NOTES, PrivateNotes.ToString().ToLowerInvariant());
             }
-            writer.WriteElementString(RedmineKeys.DESCRIPTION, Description);
 
+            writer.WriteElementString(RedmineKeys.DESCRIPTION, Description);
             writer.WriteStartElement(RedmineKeys.IS_PRIVATE);
-            writer.WriteValue(IsPrivate);
+            writer.WriteValue(IsPrivate.ToString().ToLowerInvariant());
             writer.WriteEndElement();
 
             writer.WriteIdIfNotNull(Project, RedmineKeys.PROJECT_ID);
@@ -374,32 +463,135 @@ namespace Redmine.Net.Api.Types
             writer.WriteArray(Uploads, RedmineKeys.UPLOADS);
             writer.WriteArray(CustomFields, RedmineKeys.CUSTOM_FIELDS);
 
-            if (Watchers != null)
-            {
-                foreach (var item in Watchers)
-                {
-                    writer.WriteElementString(RedmineKeys.WATCHER_USER_IDS, item.Id.ToString());
-                }
-            }
-
+            writer.WriteListElements(Watchers as IList<IValue>, RedmineKeys.WATCHER_USER_IDS);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public object Clone()
         {
-            var issue = new Issue { AssignedTo = AssignedTo, Author = Author, Category = Category, CustomFields = CustomFields, Description = Description, DoneRatio = DoneRatio, DueDate = DueDate, SpentHours = SpentHours, EstimatedHours = EstimatedHours, Priority = Priority, StartDate = StartDate, Status = Status, Subject = Subject, Tracker = Tracker, Project = Project, FixedVersion = FixedVersion, Notes = Notes, Watchers = Watchers };
+            var issue = new Issue
+            {
+                AssignedTo = AssignedTo,
+                Author = Author,
+                Category = Category,
+                CustomFields = CustomFields.Clone(),
+                Description = Description,
+                DoneRatio = DoneRatio,
+                DueDate = DueDate,
+                SpentHours = SpentHours,
+                EstimatedHours = EstimatedHours,
+                Priority = Priority,
+                StartDate = StartDate,
+                Status = Status,
+                Subject = Subject,
+                Tracker = Tracker,
+                Project = Project,
+                FixedVersion = FixedVersion,
+                Notes = Notes,
+                Watchers = Watchers.Clone()
+            };
             return issue;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Issue other)
         {
             if (other == null) return false;
-            return (Id == other.Id && Project == other.Project && Tracker == other.Tracker && Status == other.Status && Priority == other.Priority
-                && Author == other.Author && Category == other.Category && Subject == other.Subject && Description == other.Description && StartDate == other.StartDate
-                && DueDate == other.DueDate && DoneRatio == other.DoneRatio && EstimatedHours == other.EstimatedHours && Equals(CustomFields, other.CustomFields)
-                && CreatedOn == other.CreatedOn && UpdatedOn == other.UpdatedOn && AssignedTo == other.AssignedTo && FixedVersion == other.FixedVersion
-                && Notes == other.Notes && Equals(Watchers, other.Watchers) && ClosedOn == other.ClosedOn && SpentHours == other.SpentHours
-                && PrivateNotes == other.PrivateNotes
-                );
+            return (
+                Id == other.Id
+            && Project == other.Project
+            && Tracker == other.Tracker
+            && Status == other.Status
+            && Priority == other.Priority
+            && Author == other.Author
+            && Category == other.Category
+            && Subject == other.Subject
+            && Description == other.Description
+            && StartDate == other.StartDate
+            && DueDate == other.DueDate
+            && DoneRatio == other.DoneRatio
+            && EstimatedHours == other.EstimatedHours
+            && (CustomFields != null ? CustomFields.Equals<IssueCustomField>(other.CustomFields) : other.CustomFields == null)
+            && CreatedOn == other.CreatedOn
+            && UpdatedOn == other.UpdatedOn
+            && AssignedTo == other.AssignedTo
+            && FixedVersion == other.FixedVersion
+            && Notes == other.Notes
+            && (Watchers != null ? Watchers.Equals<Watcher>(other.Watchers) : other.Watchers == null)
+            && ClosedOn == other.ClosedOn
+            && SpentHours == other.SpentHours
+            && PrivateNotes == other.PrivateNotes
+            && (Attachments != null ? Attachments.Equals<Attachment>(other.Attachments) : other.Attachments == null)
+            && (Changesets!= null ? Changesets.Equals<ChangeSet>(other.Changesets) : other.Changesets == null)
+            && (Children != null ?  Children.Equals<IssueChild>(other.Children) : other.Children == null)
+            && (Journals != null ? Journals.Equals<Journal>(other.Journals) : other.Journals == null)
+            && (Relations != null ? Relations.Equals<IssueRelation>(other.Relations) : other.Relations == null)
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[Issue: {30}, Project={0}, Tracker={1}, Status={2}, Priority={3}, Author={4}, Category={5}, Subject={6}, Description={7}, StartDate={8}, DueDate={9}, DoneRatio={10}, PrivateNotes={11}, EstimatedHours={12}, SpentHours={13}, CustomFields={14}, CreatedOn={15}, UpdatedOn={16}, ClosedOn={17}, Notes={18}, AssignedTo={19}, ParentIssue={20}, FixedVersion={21}, IsPrivate={22}, Journals={23}, Changesets={24}, Attachments={25}, Relations={26}, Children={27}, Uploads={28}, Watchers={29}]",
+                Project, Tracker, Status, Priority, Author, Category, Subject, Description, StartDate, DueDate, DoneRatio, PrivateNotes,
+                EstimatedHours, SpentHours, CustomFields, CreatedOn, UpdatedOn, ClosedOn, Notes, AssignedTo, ParentIssue, FixedVersion,
+                IsPrivate, Journals, Changesets, Attachments, Relations, Children, Uploads, Watchers, base.ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            var hashCode = base.GetHashCode();
+
+            hashCode = HashCodeHelper.GetHashCode(Project, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Tracker, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Status, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Priority, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Author, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Category, hashCode);
+
+            hashCode = HashCodeHelper.GetHashCode(Subject, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Description, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(StartDate, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Project, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(DueDate, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(DoneRatio, hashCode);
+
+            hashCode = HashCodeHelper.GetHashCode(PrivateNotes, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(EstimatedHours, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(SpentHours, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(CreatedOn, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(UpdatedOn, hashCode);
+
+            hashCode = HashCodeHelper.GetHashCode(Notes, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(AssignedTo, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(ParentIssue, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(FixedVersion, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(IsPrivate, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Journals, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(CustomFields, hashCode);
+
+            hashCode = HashCodeHelper.GetHashCode(Changesets, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Attachments, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Relations, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Children, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Uploads, hashCode);
+            hashCode = HashCodeHelper.GetHashCode(Watchers, hashCode);
+
+            return hashCode;
         }
     }
 }

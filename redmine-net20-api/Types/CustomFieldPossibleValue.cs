@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,19 +16,67 @@
 
 using System;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [XmlRoot(RedmineKeys.POSSIBLE_VALUE)]
     public class CustomFieldPossibleValue : IEquatable<CustomFieldPossibleValue>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [XmlElement(RedmineKeys.VALUE)]
         public string Value { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(CustomFieldPossibleValue other)
         {
             if (other == null) return false;
             return (Value == other.Value);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as CustomFieldPossibleValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = 13;
+				hashCode = HashCodeHelper.GetHashCode(Value,hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+		public override string ToString ()
+		{
+			return string.Format ("[CustomFieldPossibleValue: {0}]", base.ToString());
+		}
     }
 }

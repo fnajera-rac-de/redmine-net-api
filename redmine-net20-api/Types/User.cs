@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -98,6 +100,9 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.STATUS, IsNullable = true)]
         public UserStatus Status { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [XmlElement(RedmineKeys.MUST_CHANGE_PASSWD, IsNullable = true)]
         public bool MustChangePassword { get; set; }
 
@@ -129,11 +134,19 @@ namespace Redmine.Net.Api.Types
         [XmlArrayItem(RedmineKeys.GROUP)]
         public List<UserGroup> Groups { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public XmlSchema GetSchema()
         {
             return null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadXml(XmlReader reader)
         {
             reader.Read();
@@ -180,6 +193,10 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteElementString(RedmineKeys.LOGIN, Login);
@@ -188,15 +205,73 @@ namespace Redmine.Net.Api.Types
             writer.WriteElementString(RedmineKeys.MAIL, Email);
             writer.WriteElementString(RedmineKeys.PASSWORD, Password);
             writer.WriteValueOrEmpty(AuthenticationModeId, RedmineKeys.AUTH_SOURCE_ID);
-            writer.WriteElementString(RedmineKeys.MUST_CHANGE_PASSWD, MustChangePassword.ToString());
+            writer.WriteElementString(RedmineKeys.MUST_CHANGE_PASSWD, MustChangePassword.ToString().ToLowerInvariant());
 
             writer.WriteArray(CustomFields, RedmineKeys.CUSTOM_FIELDS);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(User other)
         {
             if (other == null) return false;
-            return ( Login == other.Login);
+            return (
+                Id == other.Id
+                && Login.Equals(other.Login)
+                //&& Password.Equals(other.Password)
+                && FirstName.Equals(other.FirstName)
+                && LastName.Equals(other.LastName)
+                && Email.Equals(other.Email)
+				&& (ApiKey != null ? ApiKey.Equals(other.ApiKey) : other.ApiKey == null)
+                && AuthenticationModeId == other.AuthenticationModeId
+                && CreatedOn == other.CreatedOn
+                && LastLoginOn == other.LastLoginOn
+                && Status == other.Status
+                && MustChangePassword == other.MustChangePassword
+                && (CustomFields != null ? CustomFields.Equals<IssueCustomField>(other.CustomFields) : other.CustomFields == null)
+                && (Memberships != null ? Memberships.Equals<Membership>(other.Memberships): other.Memberships == null)
+                && (Groups != null ? Groups.Equals<UserGroup>(other.Groups) : other.Groups == null)
+            );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = base.GetHashCode();
+                hashCode = HashCodeHelper.GetHashCode(Login, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Password, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(FirstName, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(LastName, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Email, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(AuthenticationModeId, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(CreatedOn, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(LastLoginOn, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(ApiKey, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Status, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(MustChangePassword, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(CustomFields, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Memberships, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Groups, hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[User: {14}, Login={0}, Password={1}, FirstName={2}, LastName={3}, Email={4}, AuthenticationModeId={5}, CreatedOn={6}, LastLoginOn={7}, ApiKey={8}, Status={9}, MustChangePassword={10}, CustomFields={11}, Memberships={12}, Groups={13}]",
+                Login, Password, FirstName, LastName, Email, AuthenticationModeId, CreatedOn, LastLoginOn, ApiKey, Status, MustChangePassword, CustomFields, Memberships, Groups, base.ToString());
         }
     }
 }

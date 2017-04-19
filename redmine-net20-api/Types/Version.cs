@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -85,6 +86,10 @@ namespace Redmine.Net.Api.Types
         [XmlArrayItem(RedmineKeys.CUSTOM_FIELD)]
         public IList<IssueCustomField> CustomFields { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
             reader.Read();
@@ -123,36 +128,114 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public override void WriteXml(XmlWriter writer)
         {
             writer.WriteElementString(RedmineKeys.NAME, Name);
-            writer.WriteElementString(RedmineKeys.STATUS, Status.ToString());
-            writer.WriteElementString(RedmineKeys.SHARING, Sharing.ToString());
+            writer.WriteElementString(RedmineKeys.STATUS, Status.ToString().ToLowerInvariant());
+            writer.WriteElementString(RedmineKeys.SHARING, Sharing.ToString().ToLowerInvariant());
 
             writer.WriteDateOrEmpty(DueDate, RedmineKeys.DUE_DATE);
             writer.WriteElementString(RedmineKeys.DESCRIPTION, Description);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Version other)
         {
             if (other == null) return false;
-            return (Id == other.Id && Name == other.Name && Project == other.Project && Description == other.Description && Status == other.Status && DueDate == other.DueDate && Sharing == other.Sharing && CreatedOn == other.CreatedOn && UpdatedOn == other.UpdatedOn && CustomFields == other.CustomFields);
+            return (Id == other.Id && Name == other.Name
+                && Project == other.Project
+                && Description == other.Description
+                && Status == other.Status
+                && DueDate == other.DueDate
+                && Sharing == other.Sharing
+                && CreatedOn == other.CreatedOn
+                && UpdatedOn == other.UpdatedOn
+                && (CustomFields != null ? CustomFields.Equals<IssueCustomField>(other.CustomFields) : other.CustomFields == null));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = base.GetHashCode();
+                hashCode = HashCodeHelper.GetHashCode(Project, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Description, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Status, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(DueDate, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Sharing, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(CreatedOn, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(UpdatedOn, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(CustomFields, hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[Version: {8}, Project={0}, Description={1}, Status={2}, DueDate={3}, Sharing={4}, CreatedOn={5}, UpdatedOn={6}, CustomFields={7}]",
+                Project, Description, Status, DueDate, Sharing, CreatedOn, UpdatedOn, CustomFields, base.ToString());
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum VersionSharing
     {
+        /// <summary>
+        /// 
+        /// </summary>
         none = 1,
+        /// <summary>
+        /// 
+        /// </summary>
         descendants,
+        /// <summary>
+        /// 
+        /// </summary>
         hierarchy,
+        /// <summary>
+        /// 
+        /// </summary>
         tree,
+        /// <summary>
+        /// 
+        /// </summary>
         system
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public enum VersionStatus
     {
+        /// <summary>
+        /// 
+        /// </summary>
         open = 1,
+        /// <summary>
+        /// 
+        /// </summary>
         locked,
+        /// <summary>
+        /// 
+        /// </summary>
         closed
     }
 }

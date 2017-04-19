@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -23,7 +24,7 @@ namespace Redmine.Net.Api.Types
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class Identifiable<T> where T : Identifiable<T>, IEquatable<T>
+	public abstract class Identifiable<T> where T : Identifiable<T>, IEquatable<T>
     {
 
         /// <summary>
@@ -33,7 +34,11 @@ namespace Redmine.Net.Api.Types
         [XmlAttribute(RedmineKeys.ID)]
         public int Id { get; set; }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Identifiable<T> other)
         {
             if (other == null) return false;
@@ -41,6 +46,11 @@ namespace Redmine.Net.Api.Types
             return Id == other.Id;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -49,25 +59,49 @@ namespace Redmine.Net.Api.Types
             return Equals(obj as Identifiable<T>);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             unchecked
             {
                 var hashCode = 13;
-                hashCode = (hashCode * 397) ^ Id.GetHashCode();
-
+                hashCode = HashCodeHelper.GetHashCode(Id, hashCode);
                 return hashCode;
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator ==(Identifiable<T> left, Identifiable<T> right)
         {
             return Equals(left, right);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static bool operator !=(Identifiable<T> left, Identifiable<T> right)
         {
             return !Equals(left, right);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[Identifiable: Id={0}]", Id);
         }
     }
 }

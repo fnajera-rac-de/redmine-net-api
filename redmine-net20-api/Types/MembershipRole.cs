@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -41,25 +43,55 @@ namespace Redmine.Net.Api.Types
         /// <param name="reader">The reader.</param>
         public override void ReadXml(XmlReader reader)
         {
-            base.ReadXml(reader);
+            Id = Convert.ToInt32(reader.GetAttribute(RedmineKeys.ID));
+            Name = reader.GetAttribute(RedmineKeys.NAME);
             Inherited = reader.ReadAttributeAsBoolean(RedmineKeys.INHERITED);
             reader.Read();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public override void WriteXml(XmlWriter writer)
         {
             writer.WriteValue(Id);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(MembershipRole other)
         {
             if (other == null) return false;
             return Id == other.Id && Name == other.Name && Inherited == other.Inherited;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = 13;
+                hashCode = HashCodeHelper.GetHashCode(Id, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Inherited, hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return base.ToString() + Inherited;
+            return string.Format("[MembershipRole: {1}, Inherited={0}]", Inherited, base.ToString());
         }
     }
 }

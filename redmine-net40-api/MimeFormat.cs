@@ -1,5 +1,5 @@
 ﻿/*
-Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+Copyright 2011 - 2016 Adrian Popescu.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,9 +17,17 @@ limitations under the License.
 
 namespace Redmine.Net.Api
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum MimeFormat
     {
-        xml,
-        json
+        /// <summary>
+        /// </summary>
+        Xml,
+        /// <summary>
+        /// The json
+        /// </summary>
+        Json
     }
 }

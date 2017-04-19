@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,17 +16,34 @@
 
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
 
 namespace Redmine.Net.Api.Types
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [XmlRoot(RedmineKeys.TRACKER)]
     public class TrackerCustomField : Tracker
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
             Id = reader.ReadAttributeAsInt(RedmineKeys.ID);
             Name = reader.GetAttribute(RedmineKeys.NAME);
             reader.Read();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+		public override string ToString ()
+		{
+			return string.Format ("[TrackerCustomField: {0}]", base.ToString());
+		}
     }
 }

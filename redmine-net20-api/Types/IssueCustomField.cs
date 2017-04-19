@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Extensions;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -26,7 +28,7 @@ namespace Redmine.Net.Api.Types
     /// 
     /// </summary>
     [XmlRoot(RedmineKeys.CUSTOM_FIELD)]
-    public class IssueCustomField : IdentifiableName, IEquatable<IssueCustomField>
+    public class IssueCustomField : IdentifiableName, IEquatable<IssueCustomField>, ICloneable
     {
         /// <summary>
         /// Gets or sets the value.
@@ -36,12 +38,18 @@ namespace Redmine.Net.Api.Types
         [XmlArrayItem(RedmineKeys.VALUE)]
         public IList<CustomFieldValue> Values { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [XmlAttribute(RedmineKeys.MULTIPLE)]
         public bool Multiple { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public override void ReadXml(XmlReader reader)
         {
-            //base.ReadXml(reader);
             Id = Convert.ToInt32(reader.GetAttribute(RedmineKeys.ID));
             Name = reader.GetAttribute(RedmineKeys.NAME);
 
@@ -59,6 +67,10 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public override void WriteXml(XmlWriter writer)
         {
             if (Values == null) return;
@@ -67,12 +79,7 @@ namespace Redmine.Net.Api.Types
             writer.WriteAttributeString(RedmineKeys.ID, Id.ToString(CultureInfo.InvariantCulture));
             if (itemsCount > 1)
             {
-                writer.WriteStartElement(RedmineKeys.VALUE);
-                writer.WriteAttributeString("type", "array");
-
-                foreach (var v in Values) writer.WriteElementString(RedmineKeys.VALUE, v.Info);
-
-                writer.WriteEndElement();
+                writer.WriteArrayStringElement(Values, RedmineKeys.VALUE, GetValue);
             }
             else
             {
@@ -80,10 +87,61 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(IssueCustomField other)
         {
             if (other == null) return false;
-            return (Id == other.Id && Name == other.Name && Multiple == other.Multiple && Values == other.Values);
+            return (Id == other.Id && Name == other.Name && Multiple == other.Multiple && Values.Equals<CustomFieldValue>(other.Values));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            var issueCustomField = new IssueCustomField { Multiple = Multiple, Values = Values.Clone<CustomFieldValue>() };
+            return issueCustomField;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[IssueCustomField: {2} Values={0}, Multiple={1}]", Values, Multiple, base.ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = 13;
+                hashCode = HashCodeHelper.GetHashCode(Id, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Values, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Multiple, hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public string GetValue(object item)
+        {
+            return ((CustomFieldValue)item).Info;
         }
     }
 }

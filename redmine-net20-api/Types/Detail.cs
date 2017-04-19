@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -37,13 +38,13 @@ namespace Redmine.Net.Api.Types
         public string Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the status id.
+        /// Gets or sets the name.
         /// </summary>
         /// <value>
-        /// The status id.
+        /// The name.
         /// </value>
         [XmlAttribute(RedmineKeys.NAME)]
-        public string StatusId { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the old value.
@@ -63,12 +64,20 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.NEW_VALUE)]
         public string NewValue { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public XmlSchema GetSchema() { return null; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadXml(XmlReader reader)
         {
             Property = reader.GetAttribute(RedmineKeys.PROPERTY);
-            StatusId = reader.GetAttribute(RedmineKeys.NAME);
+            Name = reader.GetAttribute(RedmineKeys.NAME);
 
             reader.Read();
 
@@ -91,17 +100,64 @@ namespace Redmine.Net.Api.Types
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteXml(XmlWriter writer) { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(Detail other)
         {
             if (other == null) return false;
-            return Property == other.Property && StatusId == other.StatusId && OldValue == other.OldValue && NewValue == other.NewValue;
+            return (Property != null ? Property.Equals(other.Property) : other.Property == null)
+                && (Name != null ? Name.Equals(other.Name) : other.Name == null)
+                && (OldValue != null ? OldValue.Equals(other.OldValue) : other.OldValue == null)
+                && (NewValue != null ? NewValue.Equals(other.NewValue) : other.NewValue == null);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Detail);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = 13;
+                hashCode = HashCodeHelper.GetHashCode(Property, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(OldValue, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(NewValue, hashCode);
+
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return base.ToString();
+            return string.Format("[Detail: Property={0}, Name={1}, OldValue={2}, NewValue={3}]", Property, Name, OldValue, NewValue);
         }
     }
 }

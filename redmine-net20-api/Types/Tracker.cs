@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 using System;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Xml.Schema;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -25,35 +25,18 @@ namespace Redmine.Net.Api.Types
     /// Availability 1.3
     /// </summary>
     [XmlRoot(RedmineKeys.TRACKER)]
-    public class Tracker : IXmlSerializable, IEquatable<Tracker>
+    public class Tracker : IdentifiableName, IEquatable<Tracker>
     {
         /// <summary>
-        /// Gets or sets the id.
         /// </summary>
-        /// <value>
-        /// The id.
-        /// </value>
-        [XmlElement(RedmineKeys.ID)]
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Gets or sets the name.
-        /// </summary>
-        /// <value>
-        /// The name.
-        /// </value>
-        [XmlElement(RedmineKeys.NAME)]
-        public string Name { get; set; }
-
-        public void WriteXml(XmlWriter writer) { }
-
-        public XmlSchema GetSchema() { return null; }
+        /// <param name="writer"></param>
+        public override void WriteXml(XmlWriter writer) { }
 
         /// <summary>
         /// Generates an object from its XML representation.
         /// </summary>
         /// <param name="reader">The <see cref="T:System.Xml.XmlReader"/> stream from which the object is deserialized.</param>
-        public virtual void ReadXml(XmlReader reader)
+        public override void ReadXml(XmlReader reader)
         {
             reader.Read();
             while (!reader.EOF)
@@ -89,9 +72,41 @@ namespace Redmine.Net.Api.Types
             return Id == other.Id && Name == other.Name;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals(obj as Tracker);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = 13;
+                hashCode = HashCodeHelper.GetHashCode(Id, hashCode);
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return Id + ", " + Name;
+            return string.Format("[Tracker: Id={0}, Name={1}]", Id, Name);
         }
     }
 }

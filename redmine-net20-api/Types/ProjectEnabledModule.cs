@@ -1,5 +1,5 @@
 ﻿/*
-Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+Copyright 2011 - 2016 Adrian Popescu.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,27 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-using System;
-using System.Xml;
 using System.Xml.Serialization;
 
 namespace Redmine.Net.Api.Types
 {
     /// <summary>
-    /// 
+    /// the module name: boards, calendar, documents, files, gantt, issue_tracking, news, repository, time_tracking, wiki.
     /// </summary>
     [XmlRoot(RedmineKeys.ENABLED_MODULE)]
-    public class ProjectEnabledModule : IdentifiableName, IEquatable<ProjectEnabledModule>
+ public class ProjectEnabledModule : IdentifiableName, IValue
     {
+        #region IValue implementation
         /// <summary>
-        /// the module name: boards, calendar, documents, files, gantt, issue_tracking, news, repository, time_tracking, wiki.
+        /// 
         /// </summary>
-        new public string Name { get; set; }
-
-        public bool Equals(ProjectEnabledModule other)
+        public string Value
         {
-            if (other == null) return false;
-            return Id == other.Id && Name == other.Name;
+            get { return Name; }
+        }
+
+        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Format("[ProjectEnabledModule: {0}]", base.ToString());
         }
     }
 }

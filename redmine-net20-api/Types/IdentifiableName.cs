@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2015 Adrian Popescu, Dorin Huzum.
+   Copyright 2011 - 2016 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Redmine.Net.Api.Internals;
 
 namespace Redmine.Net.Api.Types
 {
@@ -55,8 +56,16 @@ namespace Redmine.Net.Api.Types
         [XmlAttribute(RedmineKeys.NAME)]
         public String Name { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public XmlSchema GetSchema() { return null; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
         public virtual void ReadXml(XmlReader reader)
         {
             Id = Convert.ToInt32(reader.GetAttribute(RedmineKeys.ID));
@@ -64,30 +73,45 @@ namespace Redmine.Net.Api.Types
             reader.Read();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="writer"></param>
         public virtual void WriteXml(XmlWriter writer)
         {
             writer.WriteAttributeString(RedmineKeys.ID, Id.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString(RedmineKeys.NAME, Name);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return string.Format("{0}, {1}", Id, Name);
+            return string.Format("[IdentifiableName: Id={0}, Name={1}]", Id, Name);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(IdentifiableName other)
         {
             if (other == null) return false;
             return (Id == other.Id && Name == other.Name);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             unchecked
             {
                 var hashCode = base.GetHashCode();
-                var nameStrHashCode = !string.IsNullOrEmpty(Name) ? Name.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ nameStrHashCode;
+                hashCode = HashCodeHelper.GetHashCode(Name, hashCode);
                 return hashCode;
             }
         }
