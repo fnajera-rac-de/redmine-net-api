@@ -450,7 +450,13 @@ namespace Redmine.Net.Api
         /// <returns>Returns the complete list of objects.</returns>
         public List<T> GetObjects<T>(params string[] include) where T : class, new()
         {
-            return GetObjects<T>(PageSize, 0, include);
+            var parameters = new NameValueCollection();
+            if (include != null)
+            {
+                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
+            }
+
+            return GetObjects<T>(parameters);
         }
 
         /// <summary>
