@@ -678,6 +678,16 @@ namespace Redmine.Net.Api
         }
 
         /// <summary>
+        /// Creates a new instance of a WebClient suitable for Redmine operations.
+        /// The default implementation returns a new instance of RedmineWebClient with Proxy filled.
+        /// </summary>
+        /// <returns>A new instance of a WebClient suitable for Redmine operations.</returns>
+        protected virtual RedmineWebClient CreateNewWebClient()
+        {
+            return new RedmineWebClient { Proxy = Proxy };
+        }
+
+        /// <summary>
         ///     Creates the Redmine web client.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
@@ -686,7 +696,7 @@ namespace Redmine.Net.Api
         /// <code></code>
         public virtual RedmineWebClient CreateWebClient(NameValueCollection parameters, bool uploadFile = false)
         {
-            var webClient = new RedmineWebClient { Proxy = Proxy };
+            var webClient = CreateNewWebClient();
             if (!uploadFile)
             {
                 webClient.Headers.Add(HttpRequestHeader.ContentType, MimeFormat == MimeFormat.Xml
