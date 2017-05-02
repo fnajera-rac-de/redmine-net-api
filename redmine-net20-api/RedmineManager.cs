@@ -436,6 +436,34 @@ namespace Redmine.Net.Api
         }
 
         /// <summary>
+        ///     Walks a complete list of objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="limit">The page size.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="include">Optional fetched data.</param>
+        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
+        /// <remarks>
+        /// Optional fetched data:
+        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
+        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
+        ///     Users: memberships, groups (added in 2.1)
+        ///     Groups: users, memberships
+        /// </remarks>
+        public void WalkObjects<T>(int limit, int offset, Action<T, int, int> action, params string[] include) where T : class, new()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(RedmineKeys.LIMIT, limit.ToString(CultureInfo.InvariantCulture));
+            parameters.Add(RedmineKeys.OFFSET, offset.ToString(CultureInfo.InvariantCulture));
+            if (include != null)
+            {
+                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
+            }
+
+            WalkObjects<T>(action, parameters);
+        }
+
+        /// <summary>
         ///     Returns the complete list of objects.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -457,6 +485,30 @@ namespace Redmine.Net.Api
             }
 
             return GetObjects<T>(parameters);
+        }
+
+        /// <summary>
+        ///     Walks a complete list of objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="include">Optional fetched data.</param>
+        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
+        /// <remarks>
+        /// Optional fetched data:
+        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
+        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
+        ///     Users: memberships, groups (added in 2.1)
+        ///     Groups: users, memberships
+        /// </remarks>
+        public void WalkObjects<T>(Action<T, int, int> action, params string[] include) where T : class, new()
+        {
+            var parameters = new NameValueCollection();
+            if (include != null)
+            {
+                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
+            }
+
+            WalkObjects<T>(action, parameters);
         }
 
         /// <summary>
@@ -514,6 +566,60 @@ namespace Redmine.Net.Api
                 wex.HandleWebException("GetObjectsAsync", MimeFormat);
             }
             return resultList;
+        }
+
+        /// <summary>
+        ///     Walks a complete list of objects.
+        /// </summary>
+        /// <typeparam name="T">The type of objects to retrieve.</typeparam>
+        /// <param name="parameters">Optional filters and/or optional fetched data.</param>
+        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
+        public void WalkObjects<T>(Action<T, int, int> action, NameValueCollection parameters) where T : class, new()
+        {
+            int totalCount = 0, pageSize = 0, offset = 0;
+            var isLimitSet = false;
+
+            if (parameters == null)
+            {
+                parameters = new NameValueCollection();
+            }
+            else
+            {
+                isLimitSet = int.TryParse(parameters[RedmineKeys.LIMIT], out pageSize);
+                int.TryParse(parameters[RedmineKeys.OFFSET], out offset);
+            }
+            if (pageSize == default(int))
+            {
+                pageSize = PageSize > 0 ? PageSize : DEFAULT_PAGE_SIZE_VALUE;
+                parameters.Set(RedmineKeys.LIMIT, pageSize.ToString(CultureInfo.InvariantCulture));
+            }
+
+            var i = 0;
+            try
+            {
+                do
+                {
+                    parameters.Set(RedmineKeys.OFFSET, offset.ToString(CultureInfo.InvariantCulture));
+                    var tempResult = GetPaginatedObjects<T>(parameters);
+                    if (tempResult != null)
+                    {
+                        if (i == 0)
+                        {
+                            totalCount = isLimitSet ? pageSize : tempResult.TotalCount;
+                        }
+                        foreach (var x in tempResult.Objects)
+                        {
+                            action(x, i, totalCount);
+                            i++;
+                        }
+                    }
+                    offset += pageSize;
+                } while (offset < totalCount);
+            }
+            catch (WebException wex)
+            {
+                wex.HandleWebException("WalkObjectsAsync", MimeFormat);
+            }
         }
 
         /// <summary>
