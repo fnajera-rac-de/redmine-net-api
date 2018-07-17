@@ -553,7 +553,7 @@ namespace Redmine.Net.Api
         ///     Users: memberships, groups (added in 2.1)
         ///     Groups: users, memberships
         /// </remarks>
-        public void WalkObjects<T>(int limit, int offset, Action<T, int, int> action, params string[] include) where T : class, new()
+        public void WalkObjects<T>(int limit, int offset, ActionWalk<T> action, params string[] include) where T : class, new()
         {
             var parameters = new NameValueCollection();
             parameters.Add(RedmineKeys.LIMIT, limit.ToString(CultureInfo.InvariantCulture));
@@ -579,7 +579,7 @@ namespace Redmine.Net.Api
         ///     Users: memberships, groups (added in 2.1)
         ///     Groups: users, memberships
         /// </remarks>
-        public void WalkObjects<T>(Action<T, int, int> action, params string[] include) where T : class, new()
+        public void WalkObjects<T>(ActionWalk<T> action, params string[] include) where T : class, new()
         {
             var parameters = new NameValueCollection();
             if (include != null)
@@ -596,7 +596,7 @@ namespace Redmine.Net.Api
         /// <typeparam name="T">The type of objects to retrieve.</typeparam>
         /// <param name="parameters">Optional filters and/or optional fetched data.</param>
         /// <param name="action">Action to execute for each object (params: object, index, count)</param>
-        public void WalkObjects<T>(Action<T, int, int> action, NameValueCollection parameters) where T : class, new()
+        public void WalkObjects<T>(ActionWalk<T> action, NameValueCollection parameters) where T : class, new()
         {
             int totalCount = 0, pageSize = 0, offset = 0;
             var isLimitSet = false;
@@ -619,6 +619,7 @@ namespace Redmine.Net.Api
             var i = 0;
             try
             {
+                var stop = false;
                 do
                 {
                     parameters.Set(RedmineKeys.OFFSET, offset.ToString(CultureInfo.InvariantCulture));
@@ -631,12 +632,16 @@ namespace Redmine.Net.Api
                         }
                         foreach (var x in tempResult.Objects)
                         {
-                            action(x, i, totalCount);
+                            if (!action(x, i, totalCount))
+                            {
+                                stop = true;
+                                break;
+                            }
                             i++;
                         }
                     }
                     offset += pageSize;
-                } while (offset < totalCount);
+                } while (!stop && offset < totalCount);
             }
             catch (WebException wex)
             {
@@ -874,4 +879,14 @@ namespace Redmine.Net.Api
             return false;
         }
     }
+
+    /// <summary>
+    /// Action to be execute in each step of the walk
+    /// </summary>
+    /// <typeparam name="T">Type of the items being walked</typeparam>
+    /// <param name="item">Current item</param>
+    /// <param name="index">Current index</param>
+    /// <param name="count">Global count of items</param>
+    /// <returns>True to keep walking, false to stop walking</returns>
+    public delegate bool ActionWalk<T>(T item, int index, int count);
 }

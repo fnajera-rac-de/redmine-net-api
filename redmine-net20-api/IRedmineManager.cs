@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
@@ -68,5 +69,10 @@ namespace Redmine.Net.Api.Types
 
         RedmineWebClient CreateWebClient(NameValueCollection parameters, bool uploadFile = false);
         bool RemoteCertValidate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error);
+
+        void WalkObjects<T>(ActionWalk<T> action, NameValueCollection parameters) where T : class, new();
+        void WalkObjects<T>(ActionWalk<T> action, params string[] include) where T : class, new();
+        void WalkObjects<T>(int limit, int offset, ActionWalk<T> action, params string[] include) where T : class, new();
+
     }
 }
