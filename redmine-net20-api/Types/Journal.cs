@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -57,6 +57,9 @@ namespace Redmine.Net.Api.Types
         [XmlElement(RedmineKeys.CREATED_ON, IsNullable = true)]
         public DateTime? CreatedOn { get; set; }
 
+        [XmlElement(RedmineKeys.PRIVATE_NOTES)]
+        public bool PrivateNotes { get;  set; }
+
         /// <summary>
         /// Gets or sets the details.
         /// </summary>
@@ -97,6 +100,8 @@ namespace Redmine.Net.Api.Types
                     case RedmineKeys.NOTES: Notes = reader.ReadElementContentAsString(); break;
 
                     case RedmineKeys.CREATED_ON: CreatedOn = reader.ReadElementContentAsNullableDateTime(); break;
+
+                    case RedmineKeys.PRIVATE_NOTES: PrivateNotes = reader.ReadElementContentAsBoolean(); break;
 
                     case RedmineKeys.DETAILS: Details = reader.ReadElementContentAsCollection<Detail>(); break;
 

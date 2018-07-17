@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -71,7 +71,8 @@ namespace Redmine.Net.Api.Internals
             {typeof (ProjectEnabledModule), new ProjectEnabledModuleConverter()},
             {typeof (CustomField), new CustomFieldConverter()},
             {typeof (CustomFieldRole), new CustomFieldRoleConverter()},
-            {typeof (CustomFieldPossibleValue), new CustomFieldPossibleValueConverter()}
+            {typeof (CustomFieldPossibleValue), new CustomFieldPossibleValueConverter()},
+            {typeof (File), new FileConverter() }
         };
 
         /// <summary>

@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2016 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -139,7 +139,15 @@ namespace Redmine.Net.Api
         /// <summary>
         /// 
         /// </summary>
+        public const string DIGEST = "digest";
+        /// <summary>
+        /// 
+        /// </summary>
         public const string DONE_RATIO = "done_ratio";
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string DOWNLOADS = "downloads";
         /// <summary>
         /// 
         /// </summary>
@@ -172,6 +180,10 @@ namespace Redmine.Net.Api
         /// 
         /// </summary>
         public const string FIELD_FORMAT = "field_format";
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string FILE = "file";
         /// <summary>
         /// 
         /// </summary>
@@ -324,6 +336,10 @@ namespace Redmine.Net.Api
         /// 
         /// </summary>
         public const string MAIL = "mail";
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string MAIL_NOTIFICATION = "mail_notification";
         /// <summary>
         /// 
         /// </summary>
@@ -547,6 +563,16 @@ namespace Redmine.Net.Api
         /// <summary>
         /// 
         /// </summary>
+        public const string TOTAL_ESTIMATED_HOURS = "total_estimated_hours";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string TOTAL_SPENT_HOURS = "total_spent_hours";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public const string TRACKER = "tracker";
         /// <summary>
         /// 
@@ -596,6 +622,10 @@ namespace Redmine.Net.Api
         /// 
         /// </summary>
         public const string VERSION = "version";
+        /// <summary>
+        /// 
+        /// </summary>
+        public const string VERSION_ID = "version_id";
         /// <summary>
         /// 
         /// </summary>

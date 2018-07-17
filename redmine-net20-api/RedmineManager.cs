@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ namespace Redmine.Net.Api
     /// <summary>
     ///     The main class to access Redmine API.
     /// </summary>
-    public class RedmineManager
+    public class RedmineManager : IRedmineManager
     {
         /// <summary>
         /// </summary>
@@ -436,34 +436,6 @@ namespace Redmine.Net.Api
         }
 
         /// <summary>
-        ///     Walks a complete list of objects.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="limit">The page size.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="include">Optional fetched data.</param>
-        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
-        /// <remarks>
-        /// Optional fetched data:
-        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
-        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
-        ///     Users: memberships, groups (added in 2.1)
-        ///     Groups: users, memberships
-        /// </remarks>
-        public void WalkObjects<T>(int limit, int offset, Action<T, int, int> action, params string[] include) where T : class, new()
-        {
-            var parameters = new NameValueCollection();
-            parameters.Add(RedmineKeys.LIMIT, limit.ToString(CultureInfo.InvariantCulture));
-            parameters.Add(RedmineKeys.OFFSET, offset.ToString(CultureInfo.InvariantCulture));
-            if (include != null)
-            {
-                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
-            }
-
-            WalkObjects<T>(action, parameters);
-        }
-
-        /// <summary>
         ///     Returns the complete list of objects.
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -478,37 +450,7 @@ namespace Redmine.Net.Api
         /// <returns>Returns the complete list of objects.</returns>
         public List<T> GetObjects<T>(params string[] include) where T : class, new()
         {
-            var parameters = new NameValueCollection();
-            if (include != null)
-            {
-                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
-            }
-
-            return GetObjects<T>(parameters);
-        }
-
-        /// <summary>
-        ///     Walks a complete list of objects.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="include">Optional fetched data.</param>
-        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
-        /// <remarks>
-        /// Optional fetched data:
-        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
-        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
-        ///     Users: memberships, groups (added in 2.1)
-        ///     Groups: users, memberships
-        /// </remarks>
-        public void WalkObjects<T>(Action<T, int, int> action, params string[] include) where T : class, new()
-        {
-            var parameters = new NameValueCollection();
-            if (include != null)
-            {
-                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
-            }
-
-            WalkObjects<T>(action, parameters);
+            return GetObjects<T>(PageSize, 0, include);
         }
 
         /// <summary>
@@ -566,6 +508,80 @@ namespace Redmine.Net.Api
                 wex.HandleWebException("GetObjectsAsync", MimeFormat);
             }
             return resultList;
+        }
+
+        /// <summary>
+        ///     Creates a new Redmine object.
+        /// </summary>
+        /// <typeparam name="T">The type of object to create.</typeparam>
+        /// <param name="obj">The object to create.</param>
+        /// <returns></returns>
+        /// <exception cref="RedmineException"></exception>
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="InternalServerErrorException"></exception>
+        /// <exception cref="UnauthorizedException"></exception>
+        /// <exception cref="ForbiddenException"></exception>
+        /// <exception cref="ConflictException"></exception>
+        /// <exception cref="NotAcceptableException"></exception>
+        /// <remarks>
+        ///     When trying to create an object with invalid or missing attribute parameters, you will get a 422 Unprocessable
+        ///     Entity response. That means that the object could not be created.
+        /// </remarks>
+        public T CreateObject<T>(T obj) where T : class, new()
+        {
+            return CreateObject(obj, null);
+        }
+
+        /// <summary>
+        ///     Walks a complete list of objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="limit">The page size.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="include">Optional fetched data.</param>
+        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
+        /// <remarks>
+        /// Optional fetched data:
+        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
+        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
+        ///     Users: memberships, groups (added in 2.1)
+        ///     Groups: users, memberships
+        /// </remarks>
+        public void WalkObjects<T>(int limit, int offset, Action<T, int, int> action, params string[] include) where T : class, new()
+        {
+            var parameters = new NameValueCollection();
+            parameters.Add(RedmineKeys.LIMIT, limit.ToString(CultureInfo.InvariantCulture));
+            parameters.Add(RedmineKeys.OFFSET, offset.ToString(CultureInfo.InvariantCulture));
+            if (include != null)
+            {
+                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
+            }
+
+            WalkObjects<T>(action, parameters);
+        }
+
+        /// <summary>
+        ///     Walks a complete list of objects.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="include">Optional fetched data.</param>
+        /// <param name="action">Action to execute for each object (params: object, index, count)</param>
+        /// <remarks>
+        /// Optional fetched data:
+        ///     Project: trackers, issue_categories, enabled_modules (since 2.6.0)
+        ///     Issue: children, attachments, relations, changesets, journals, watchers - Since 2.3.0
+        ///     Users: memberships, groups (added in 2.1)
+        ///     Groups: users, memberships
+        /// </remarks>
+        public void WalkObjects<T>(Action<T, int, int> action, params string[] include) where T : class, new()
+        {
+            var parameters = new NameValueCollection();
+            if (include != null)
+            {
+                parameters.Add(RedmineKeys.INCLUDE, string.Join(",", include));
+            }
+
+            WalkObjects<T>(action, parameters);
         }
 
         /// <summary>
@@ -765,28 +781,6 @@ namespace Redmine.Net.Api
         public byte[] DownloadFile(string address)
         {
             return WebApiHelper.ExecuteDownloadFile(this, address, "DownloadFile");
-        }
-
-        /// <summary>
-        ///     Creates a new Redmine object.
-        /// </summary>
-        /// <typeparam name="T">The type of object to create.</typeparam>
-        /// <param name="obj">The object to create.</param>
-        /// <returns></returns>
-        /// <exception cref="RedmineException"></exception>
-        /// <exception cref="NotFoundException"></exception>
-        /// <exception cref="InternalServerErrorException"></exception>
-        /// <exception cref="UnauthorizedException"></exception>
-        /// <exception cref="ForbiddenException"></exception>
-        /// <exception cref="ConflictException"></exception>
-        /// <exception cref="NotAcceptableException"></exception>
-        /// <remarks>
-        ///     When trying to create an object with invalid or missing attribute parameters, you will get a 422 Unprocessable
-        ///     Entity response. That means that the object could not be created.
-        /// </remarks>
-        public T CreateObject<T>(T obj) where T : class, new()
-        {
-            return CreateObject(obj, null);
         }
 
         /// <summary>

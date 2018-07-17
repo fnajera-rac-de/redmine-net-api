@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 using System;
 using System.Net;
+using Redmine.Net.Api.Types;
 
 namespace Redmine.Net.Api
 {
@@ -25,6 +26,13 @@ namespace Redmine.Net.Api
     public class RedmineWebClient : WebClient
     {
         private const string UA = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0";
+
+        public RedmineWebClient()
+        {
+            UserAgent = UA;
+        }
+
+        public string UserAgent { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether [use proxy].

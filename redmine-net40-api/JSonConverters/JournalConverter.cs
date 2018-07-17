@@ -1,5 +1,5 @@
 /*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ namespace Redmine.Net.Api.JSonConverters
                 journal.Id = dictionary.GetValue<int>(RedmineKeys.ID);
                 journal.Notes = dictionary.GetValue<string>(RedmineKeys.NOTES);
                 journal.User = dictionary.GetValueAsIdentifiableName(RedmineKeys.USER);
+                journal.PrivateNotes = dictionary.GetValue<bool>(RedmineKeys.PRIVATE_NOTES);
                 journal.CreatedOn = dictionary.GetValue<DateTime?>(RedmineKeys.CREATED_ON);
                 journal.Details = dictionary.GetValueAsCollection<Detail>(RedmineKeys.DETAILS);
 

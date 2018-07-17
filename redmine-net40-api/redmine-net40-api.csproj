@@ -68,6 +68,9 @@
     <Compile Include="..\redmine-net20-api\Extensions\XmlWriterExtensions.cs">
       <Link>Extensions\Extensions.cs</Link>
     </Compile>
+    <Compile Include="..\redmine-net20-api\Internals\HashCodeHelper.cs">
+      <Link>Internals\HashCodeHelper.cs</Link>
+    </Compile>
     <Compile Include="..\redmine-net20-api\Internals\UrlHelper.cs">
       <Link>Internals\UrlHelper.cs</Link>
     </Compile>
@@ -79,9 +82,6 @@
     </Compile>
     <Compile Include="..\redmine-net20-api\HttpVerbs.cs">
       <Link>HttpVerbs.cs</Link>
-    </Compile>
-    <Compile Include="..\redmine-net20-api\Internals\HashCodeExtensions.cs">
-      <Link>Extensions\HashCodeExtensions.cs</Link>
     </Compile>
     <Compile Include="..\redmine-net20-api\Internals\WebApiHelper.cs">
       <Link>Internals\WebApiHelper.cs</Link>
@@ -150,6 +150,9 @@
     <Compile Include="..\redmine-net20-api\Types\Error.cs">
       <Link>Types\Error.cs</Link>
     </Compile>
+    <Compile Include="..\redmine-net20-api\Types\File.cs">
+      <Link>Types\File.cs</Link>
+    </Compile>
     <Compile Include="..\redmine-net20-api\Types\Group.cs">
       <Link>Types\Group.cs</Link>
     </Compile>
@@ -162,10 +165,10 @@
     <Compile Include="..\redmine-net20-api\Types\IdentifiableName.cs">
       <Link>Types\IdentifiableName.cs</Link>
     </Compile>
-    <Compile Include="..\redmine-net20-api\Types\IRedmineManager.cs">
+    <Compile Include="..\redmine-net20-api\IRedmineManager.cs">
       <Link>Types\IRedmineManager.cs</Link>
     </Compile>
-    <Compile Include="..\redmine-net20-api\Types\IRedmineWebClient.cs">
+    <Compile Include="..\redmine-net20-api\IRedmineWebClient.cs">
       <Link>Types\IRedmineWebClient.cs</Link>
     </Compile>
     <Compile Include="..\redmine-net20-api\Types\Issue.cs">
@@ -277,6 +280,7 @@
     <Compile Include="JSonConverters\CustomFieldRoleConverter.cs" />
     <Compile Include="JSonConverters\DetailConverter.cs" />
     <Compile Include="JSonConverters\ErrorConverter.cs" />
+    <Compile Include="JSonConverters\FileConverter.cs" />
     <Compile Include="JSonConverters\GroupConverter.cs" />
     <Compile Include="JSonConverters\GroupUserConverter.cs" />
     <Compile Include="JSonConverters\IdentifiableNameConverter.cs" />

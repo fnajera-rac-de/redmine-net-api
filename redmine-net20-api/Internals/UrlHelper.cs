@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2011 - 2016 Adrian Popescu.
+   Copyright 2011 - 2017 Adrian Popescu.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
    limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using Redmine.Net.Api.Exceptions;
 using Redmine.Net.Api.Extensions;
 using Redmine.Net.Api.Types;
+using Version = Redmine.Net.Api.Types.Version;
 
 namespace Redmine.Net.Api.Internals
 {
@@ -56,8 +58,14 @@ namespace Redmine.Net.Api.Internals
          const string ATTACHMENT_UPDATE_FORMAT = "{0}/attachments/issues/{1}.{2}";
 
         /// <summary>
+        /// 
         /// </summary>
-         const string CURRENT_USER_URI = "current";
+        const string FILE_URL_FORMAT = "{0}/projects/{1}/files.{2}";
+
+
+        /// <summary>
+        /// </summary>
+        const string CURRENT_USER_URI = "current";
         /// <summary>
         ///     Gets the upload URL.
         /// </summary>
@@ -109,6 +117,15 @@ namespace Redmine.Net.Api.Internals
                 if (string.IsNullOrEmpty(ownerId)) throw new RedmineException("The owner id(issue id) is mandatory!");
                 return string.Format(ENTITY_WITH_PARENT_FORMAT, redmineManager.Host, RedmineKeys.ISSUES,
                     ownerId, RedmineManager.Sufixes[type], redmineManager.MimeFormat.ToString().ToLower());
+            }
+
+            if (type == typeof(File))
+            {
+                if (string.IsNullOrEmpty(ownerId))
+                {
+                    throw new RedmineException("The owner id(project id) is mandatory!");
+                }
+                return string.Format(FILE_URL_FORMAT, redmineManager.Host, ownerId, redmineManager.MimeFormat.ToString().ToLower());
             }
 
             return string.Format(FORMAT, redmineManager.Host, RedmineManager.Sufixes[type],
@@ -190,7 +207,18 @@ namespace Redmine.Net.Api.Internals
                 return string.Format(ENTITY_WITH_PARENT_FORMAT, redmineManager.Host, RedmineKeys.ISSUES,
                     issueId, RedmineManager.Sufixes[type], redmineManager.MimeFormat.ToString().ToLower());
             }
-            return string.Format(FORMAT, redmineManager.Host, RedmineManager.Sufixes[type],
+
+            if (type == typeof(File))
+            {
+                var projectId = parameters.GetParameterValue(RedmineKeys.PROJECT_ID);
+                if (string.IsNullOrEmpty(projectId))
+                {
+                    throw new RedmineException("The project id is mandatory! \nCheck if you have included the parameter project_id to parameters.");
+                }
+                return string.Format(FILE_URL_FORMAT, redmineManager.Host, projectId, redmineManager.MimeFormat.ToString().ToLower());
+            }
+           
+                return string.Format(FORMAT, redmineManager.Host, RedmineManager.Sufixes[type],
                 redmineManager.MimeFormat.ToString().ToLower());
         }
 
